@@ -19,7 +19,9 @@ body
 [data-ws~=menu]
     size = 40px
     
-    position absolute
+    position fixed
+    z-index 10
+    
     background lighten(black, 15%)
     height size
     width 100%
@@ -68,6 +70,9 @@ body
             > [data-ws~=placeholder]
                 position absolute
                 background alpha(white, 5%)
+                
+                &[disabled]
+                    display none
             
             > [data-ws~=border]
                 position absolute
