@@ -1,0 +1,144 @@
+@import 'jeet'
+@import 'nib'
+
+global-reset()
+nested-reset()
+reset-font()
+reset-box-model()
+reset-body()
+reset-table()
+reset-table-cell()
+reset-html5()
+normalize-css()
+border-box-html()
+fluid-media()
+
+body
+    background lighten(black, 10%)
+
+[data-ws~=menu]
+    size = 40px
+    
+    position absolute
+    background lighten(black, 15%)
+    height size
+    width 100%
+    left 0
+    top 0
+    user-select none
+    
+    > [data-ws~=button]
+        outline 0
+        background lighten(black, 17%)
+        float left
+        height size
+        padding 0 (size / 2)
+        border 0
+        color white
+        
+        &:hover
+            background lighten(black, 10%)
+        
+        &:active
+            background lighten(black, 5%)
+        
+        &.active
+            background lighten(black, 2.5%)
+
+[data-ws~=blocks]
+    position absolute
+    width 100%
+    height 100%
+    user-select none
+    
+    > [data-ws~=block]
+        > [data-ws~=container]
+            z-index 1
+            position absolute
+            
+            > [data-ws~=content]
+                position absolute
+                width 100%
+                height 100%
+                background lighten(black, 5%)
+            
+            &:hover > [data-ws~=content]
+                background lighten(black, 2.5%)
+            
+            > [data-ws~=placeholder]
+                position absolute
+                background alpha(white, 5%)
+            
+            > [data-ws~=border]
+                position absolute
+                background lighten(black, 50%)
+                
+                &:hover
+                    background lighten(black, 70%)
+                
+                size = 5px
+                
+                &[data-ws~=n], &[data-ws~=s]
+                    width 100%
+                    height size
+                
+                &[data-ws~=w], &[data-ws~=e]
+                    width size
+                    height 100%
+                
+                &[data-ws~=ne], &[data-ws~=es], &[data-ws~=sw], &[data-ws~=wn]
+                    width size
+                    height size
+                
+                &[data-ws~=wn], &[data-ws~=n]
+                    top 0
+                    left 0
+                &[data-ws~=ne], &[data-ws~=e]
+                    top 0
+                    right 0
+                &[data-ws~=es], &[data-ws~=s]
+                    bottom 0
+                    right 0
+                &[data-ws~=sw], &[data-ws~=w]
+                    bottom 0
+                    left 0
+                
+                &[data-ws~=n]
+                    cursor n-resize
+                &[data-ws~=e]
+                    cursor e-resize
+                &[data-ws~=s]
+                    cursor s-resize
+                &[data-ws~=w]
+                    cursor w-resize
+                
+                &[data-ws~=ne]
+                    cursor ne-resize
+                &[data-ws~=es]
+                    cursor se-resize
+                &[data-ws~=sw]
+                    cursor sw-resize
+                &[data-ws~=wn]
+                    cursor nw-resize
+    
+        &.dragging, &.resizing
+            > [data-ws~=container]
+                z-index 2
+                
+                > [data-ws~=content]
+                    opacity 0.25
+        
+        > [data-ws~=guide]
+            position absolute
+            box-shadow 0 0 0 2px alpha(white, 2.5%)
+            width 0px
+            height 0px
+            
+            &[data-ws~=n]
+                width 100%
+            &[data-ws~=e]
+                height 100%
+            &[data-ws~=s]
+                width 100%
+            &[data-ws~=w]
+                height 100%

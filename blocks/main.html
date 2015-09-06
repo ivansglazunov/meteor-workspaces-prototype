@@ -1,0 +1,45 @@
+<template name="wsBlocks">
+  <div data-ws="blocks">
+    {{#each blocks}}
+      {{> wsBlock}}
+    {{/each}}
+  </div>
+  <div data-ws="menu">
+    <button data-ws="insert button">insert</button>
+    <button data-ws="select button">select</button>
+    <button data-ws="remove button">remove</button>
+    <button data-ws="snap button" class="active">snap</button>
+  </div>
+</template>
+
+<template name="wsBlock">
+  <div
+    data-ws="block" data-ws-id="{{_id}}"
+    data-ws-top="{{top}}" data-ws-right="{{right}}"
+    data-ws-bottom="{{bottom}}" data-ws-left="{{left}}"
+    data-ws-width="{{width}}" data-ws-height="{{height}}"
+  >
+    <div data-ws="container" style="width: {{width}}px; height: {{height}}px; left: {{left}}px; top: {{top}}px;">
+      
+      <div data-ws="content"></div>
+      
+      <div data-ws="placeholder"></div>
+      
+      <div data-ws="n border"></div>
+      <div data-ws="e border"></div>
+      <div data-ws="s border"></div>
+      <div data-ws="w border"></div>
+      
+      <div data-ws="ne border"></div>
+      <div data-ws="es border"></div>
+      <div data-ws="sw border"></div>
+      <div data-ws="wn border"></div>
+      
+    </div>
+    
+    <div data-ws="n guide" style="top: {{top}}px;"></div>
+    <div data-ws="e guide" style="left: {{right}}px;"></div>
+    <div data-ws="s guide" style="top: {{bottom}}px;"></div>
+    <div data-ws="w guide" style="left: {{left}}px;"></div>
+  </div>
+</template>
