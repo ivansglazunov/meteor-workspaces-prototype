@@ -15,9 +15,10 @@ fluid-media()
 
 body
     background lighten(black, 10%)
+    font-size 12px
 
 [data-ws~=menu]
-    size = 40px
+    size = 30px
     
     position fixed
     z-index 10
@@ -29,14 +30,19 @@ body
     top 0
     user-select none
     
-    > [data-ws~=button]
+    > *
         outline 0
-        background lighten(black, 17%)
         float left
         height size
         padding 0 (size / 2)
-        border 0
         color white
+        border 0
+        background transparent
+        cursor default
+    
+    > [data-ws~=button]
+        background lighten(black, 17%)
+        cursor pointer
         
         &:hover
             background lighten(black, 10%)
@@ -47,6 +53,32 @@ body
         &.active
             background lighten(black, 2.5%)
 
+[data-ws~=layers]
+    position fixed
+    z-index 11
+    right 0
+    top 0
+    width 200px
+    height 100%
+    
+    background lighten(black, 12.5%)
+    
+    [data-ws~=layer]
+        color white
+        padding 7px 10px
+        border 1px solid transparent
+        
+        &.selected
+            border-color lighten(black, 30%)
+            
+            &:hover
+                border-color lighten(black, 40%)
+        
+        &:hover
+            cursor pointer
+            
+            background lighten(black, 5%)
+
 [data-ws~=blocks]
     position absolute
     width 100%
@@ -54,6 +86,16 @@ body
     user-select none
     
     > [data-ws~=block]
+        &.selected
+            > [data-ws~=container]
+                box-shadow 0 0 15px 0 alpha(white, 10%), inset 0 0 10px 0 alpha(white, 40%)
+                
+                > [data-ws~=border]
+                    border-color lighten(black, 40%)
+                    
+                    &:hover
+                        border-color lighten(black, 75%)
+            
         > [data-ws~=container]
             z-index 1
             position absolute
@@ -76,10 +118,11 @@ body
             
             > [data-ws~=border]
                 position absolute
-                background lighten(black, 50%)
+                background alpha(white, 3%)
+                border 0px solid lighten(black, 25%)
                 
                 &:hover
-                    background lighten(black, 70%)
+                    border 0px solid lighten(black, 50%)
                 
                 size = 5px
                 
@@ -110,12 +153,16 @@ body
                 
                 &[data-ws~=n]
                     cursor n-resize
+                    border-top-width 1px
                 &[data-ws~=e]
                     cursor e-resize
+                    border-right-width 1px
                 &[data-ws~=s]
                     cursor s-resize
+                    border-bottom-width 1px
                 &[data-ws~=w]
                     cursor w-resize
+                    border-left-width 1px
                 
                 &[data-ws~=ne]
                     cursor ne-resize
@@ -135,7 +182,7 @@ body
         
         > [data-ws~=guide]
             position absolute
-            box-shadow 0 0 0 2px alpha(white, 2.5%)
+            box-shadow -0.5px -0.5px 0 1px alpha(white, 2.5%)
             width 0px
             height 0px
             
@@ -146,4 +193,8 @@ body
             &[data-ws~=s]
                 width 100%
             &[data-ws~=w]
+                height 100%
+            &[data-ws~=h]
+                width 100%
+            &[data-ws~=v]
                 height 100%

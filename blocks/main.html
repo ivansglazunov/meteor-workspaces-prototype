@@ -1,15 +1,17 @@
 <template name="wsBlocks">
-  <div data-ws="blocks">
+  <div data-ws="blocks" style="transform: scale({{zoom}}, {{zoom}});">
     {{#each blocks}}
       {{> wsBlock}}
     {{/each}}
   </div>
   <div data-ws="menu">
     <button data-ws="insert button">insert</button>
-    <button data-ws="select button">select</button>
     <button data-ws="remove button">remove</button>
-    <button data-ws="snap button" class="active">snap</button>
+    <button data-ws="plus button">plus</button>
+    <button data-ws="minus button">minus</button>
+    <button>{{zoom}}</button>
   </div>
+  {{> wsLayers}}
 </template>
 
 <template name="wsBlock">
@@ -18,12 +20,13 @@
     data-ws-top="{{top}}" data-ws-right="{{right}}"
     data-ws-bottom="{{bottom}}" data-ws-left="{{left}}"
     data-ws-width="{{width}}" data-ws-height="{{height}}"
+    data-ws-layer="{{layer}}" class="{{#if selected}}selected{{/if}}"
   >
     <div data-ws="container" style="width: {{width}}px; height: {{height}}px; left: {{left}}px; top: {{top}}px;">
       
       <div data-ws="content"></div>
       
-      <div data-ws="placeholder" disabled></div>
+      <div data-ws="placeholder"></div>
       
       <div data-ws="n border"></div>
       <div data-ws="e border"></div>
@@ -41,5 +44,7 @@
     <div data-ws="e guide" style="left: {{right}}px;"></div>
     <div data-ws="s guide" style="top: {{bottom}}px;"></div>
     <div data-ws="w guide" style="left: {{left}}px;"></div>
+    <div data-ws="h guide" style="top: {{horizontal}}px;"></div>
+    <div data-ws="v guide" style="left: {{vertical}}px;"></div>
   </div>
 </template>
