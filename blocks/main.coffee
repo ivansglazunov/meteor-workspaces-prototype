@@ -2,6 +2,26 @@
 
 if Meteor.isClient
     
+    axis =
+        x: ['top', 'bottom', 'horizontal']
+        y: ['left', 'right', 'vertical']
+        'top': 'x'
+        'right': 'y'
+        'bottom': 'x'
+        'left': 'y'
+        'n': 'top'
+        'e': 'right'
+        's': 'bottom'
+        'w': 'left'
+        'horizontal': 'x'
+        'vertical': 'y'
+        
+    revert =
+        'top': 'bottom'
+        'right': 'left'
+        'bottom': 'top'
+        'left': 'right'
+    
     # State or draggable and resizable
     memory = {}
     
@@ -18,6 +38,24 @@ if Meteor.isClient
     unmemorize = ->
         memory = {}
     
+    findSnap = ($or, data, what) ->
+        for from in axis[axis[what]]
+            result = {}
+            result[what] = { $gt: data[from] - 10, $lt: data[from] + 10 }
+            $or.push result
+    
+    whereSnap = ($or, data, what) ->
+        for from in axis[axis[what]]
+            $or.push { $where: "((this.#{axis[axis[what]][1]} - this.#{axis[axis[what]][0]}) / 2) + this.#{axis[axis[what]][0]} > #{ (data[from] - 10) } && ((this.#{axis[axis[what]][1]} - this.#{axis[axis[what]][0]}) / 2) + this.#{axis[axis[what]][0]} < #{ (data[from] + 10) }" }
+    
+    eachSnap = (snaps, snap, data, what) ->
+        for from in axis[axis[what]]
+            if snap[what] > data[from] - 10 && snap[what] < data[from] + 10 then snaps.push document: snap, from: from, to: what
+    
+    eachSnapAxis = (snaps, snap, data, what) ->
+        for from in axis[axis[what]]
+            if snap[what] > data[from] - 10 && snap[what] < data[from] + 10 then snaps.push document: snap, from: from, to: what
+    
     snappable = (_id, data, top = true, right = true, bottom = true, left = true, horizontal = true, vertical = true) ->
         snaps = []
         
@@ -26,72 +64,27 @@ if Meteor.isClient
         data.horizontal = ((data.bottom - data.top) / 2) + data.top
         data.vertical = ((data.right - data.left) / 2) + data.left
         
-        if top
-            $or.push { top: { $gt: data.top - 10, $lt: data.top + 10 } }
-            $or.push { top: { $gt: data.bottom - 10, $lt: data.bottom + 10 } }
-            $or.push { top: { $gt: data.horizontal - 10, $lt: data.horizontal + 10 } }
-        
-        if right
-            $or.push { right: { $gt: data.right - 10, $lt: data.right + 10 } }
-            $or.push { right: { $gt: data.left - 10, $lt: data.left + 10 } }
-            $or.push { right: { $gt: data.vertical - 10, $lt: data.vertical + 10 } }
-        
-        if bottom
-            $or.push { bottom: { $gt: data.bottom - 10, $lt: data.bottom + 10 } }
-            $or.push { bottom: { $gt: data.top - 10, $lt: data.top + 10 } }
-            $or.push { bottom: { $gt: data.horizontal - 10, $lt: data.horizontal + 10 } }
-        
-        if left
-            $or.push { left: { $gt: data.left - 10, $lt: data.left + 10 } }
-            $or.push { left: { $gt: data.right - 10, $lt: data.right + 10 } }
-            $or.push { left: { $gt: data.vertical - 10, $lt: data.vertical + 10 } }
-        
-        if horizontal
-            $or.push { $where: "((this.bottom - this.top) / 2) + this.top > #{ (data.top - 10) } && ((this.bottom - this.top) / 2) + this.top < #{ (data.top + 10) }" }
-            $or.push { $where: "((this.bottom - this.top) / 2) + this.top > #{ (data.bottom - 10) } && ((this.bottom - this.top) / 2) + this.top < #{ (data.bottom + 10) }" }
-            $or.push { $where: "((this.bottom - this.top) / 2) + this.top > #{ (data.horizontal - 10) } && ((this.bottom - this.top) / 2) + this.top < #{ (data.horizontal + 10) }" }
-        
-        if vertical
-            $or.push { $where: "((this.right - this.left) / 2) + this.left > #{ (data.left - 10) } && ((this.right - this.left) / 2) + this.left < #{ (data.left + 10) }" }
-            $or.push { $where: "((this.right - this.left) / 2) + this.left > #{ (data.right - 10) } && ((this.right - this.left) / 2) + this.left < #{ (data.right + 10) }" }
-            $or.push { $where: "((this.right - this.left) / 2) + this.left > #{ (data.vertical - 10) } && ((this.right - this.left) / 2) + this.left < #{ (data.vertical + 10) }" }
+        if top then findSnap $or, data, 'top'
+        if right then findSnap $or, data, 'right'
+        if bottom then findSnap $or, data, 'bottom'
+        if left then findSnap $or, data, 'left'
+        if horizontal then whereSnap $or, data, 'horizontal'
+        if vertical then whereSnap $or, data, 'vertical'
         
         Blocks
             .find
                 _id: $not: _id
                 $or: $or
             .forEach (snap) ->
-                if top
-                    if snap['top'] > data['top'] - 10 && snap['top'] < data['top'] + 10 then snaps.push horizontal: data.horizontal, vertical: data.vertical, document: snap, from: 'top', to: 'top'
-                    if snap['top'] > data['bottom'] - 10 && snap['top'] < data['bottom'] + 10 then snaps.push horizontal: data.horizontal, vertical: data.vertical, document: snap, from: 'bottom', to: 'top'
-                    if snap['top'] > data['horizontal'] - 10 && snap['top'] < data['horizontal'] + 10 then snaps.push horizontal: data.horizontal, vertical: data.vertical, document: snap, from: 'horizontal', to: 'top'
-                    
-                if right
-                    if snap['right'] > data['right'] - 10 && snap['right'] < data['right'] + 10 then snaps.push horizontal: data.horizontal, vertical: data.vertical, document: snap, from: 'right', to: 'right'
-                    if snap['right'] > data['left'] - 10 && snap['right'] < data['left'] + 10 then snaps.push horizontal: data.horizontal, vertical: data.vertical, document: snap, from: 'left', to: 'right'
-                    if snap['right'] > data['vertical'] - 10 && snap['right'] < data['vertical'] + 10 then snaps.push horizontal: data.horizontal, vertical: data.vertical, document: snap, from: 'vertical', to: 'right'
-                    
-                if bottom
-                    if snap['bottom'] > data['bottom'] - 10 && snap['bottom'] < data['bottom'] + 10 then snaps.push horizontal: data.horizontal, vertical: data.vertical, document: snap, from: 'bottom', to: 'bottom'
-                    if snap['bottom'] > data['top'] - 10 && snap['bottom'] < data['top'] + 10 then snaps.push horizontal: data.horizontal, vertical: data.vertical, document: snap, from: 'top', to: 'bottom'
-                    if snap['bottom'] > data['horizontal'] - 10 && snap['bottom'] < data['horizontal'] + 10 then snaps.push horizontal: data.horizontal, vertical: data.vertical, document: snap, from: 'horizontal', to: 'bottom'
-                    
-                if left
-                    if snap['left'] > data['left'] - 10 && snap['left'] < data['left'] + 10 then snaps.push horizontal: data.horizontal, vertical: data.vertical, document: snap, from: 'left', to: 'left'
-                    if snap['left'] > data['right'] - 10 && snap['left'] < data['right'] + 10 then snaps.push horizontal: data.horizontal, vertical: data.vertical, document: snap, from: 'right', to: 'left'
-                    if snap['left'] > data['vertical'] - 10 && snap['left'] < data['vertical'] + 10 then snaps.push horizontal: data.horizontal, vertical: data.vertical, document: snap, from: 'vertical', to: 'left'
+                snap['horizontal'] = ((snap[axis[axis['horizontal']][1]] - snap[axis[axis['horizontal']][0]]) / 2) + snap[axis[axis['horizontal']][0]]
+                snap['vertical'] = ((snap[axis[axis['vertical']][1]] - snap[axis[axis['vertical']][0]]) / 2) + snap[axis[axis['vertical']][0]]
                 
-                if horizontal
-                    v = ((snap['bottom'] - snap['top']) / 2) + snap['top']
-                    if v > data['top'] - 10 && v < data['top'] + 10 then snaps.push horizontal: data.horizontal, vertical: data.vertical, document: snap, from: 'top', to: 'horizontal'
-                    if v > data['bottom'] - 10 && v < data['bottom'] + 10 then snaps.push horizontal: data.horizontal, vertical: data.vertical, document: snap, from: 'bottom', to: 'horizontal'
-                    if v > data['horizontal'] - 10 && v < data['horizontal'] + 10 then snaps.push horizontal: data.horizontal, vertical: data.vertical, document: snap, from: 'horizontal', to: 'horizontal'
-                
-                if vertical
-                    v = ((snap['right'] - snap['left']) / 2) + snap['left']
-                    if v > data['left'] - 10 && v < data['left'] + 10 then snaps.push horizontal: data.horizontal, vertical: data.vertical, document: snap, from: 'left', to: 'vertical'
-                    if v > data['right'] - 10 && v < data['right'] + 10 then snaps.push horizontal: data.horizontal, vertical: data.vertical, document: snap, from: 'right', to: 'vertical'
-                    if v > data['vertical'] - 10 && v < data['vertical'] + 10 then snaps.push horizontal: data.horizontal, vertical: data.vertical, document: snap, from: 'vertical', to: 'vertical'
+                if top then eachSnap snaps, snap, data, 'top'
+                if right then eachSnap snaps, snap, data, 'right'
+                if bottom then eachSnap snaps, snap, data, 'bottom'
+                if left then eachSnap snaps, snap, data, 'left'
+                if horizontal then eachSnapAxis snaps, snap, data, 'horizontal'
+                if vertical then eachSnapAxis snaps, snap, data, 'vertical'
         
         return snaps
     
@@ -108,16 +101,6 @@ if Meteor.isClient
             else if (r < t && r < b) then 'right'
             else if (l < t && l < b) then 'left'
             else 'center'
-            
-    revert = (pos) ->
-        if pos is 'top' then return 'bottom'
-        if pos is 'right' then return 'left'
-        if pos is 'bottom' then return 'top'
-        if pos is 'left' then return 'right'
-        
-        console.war "The position '#{pos}' is not correct to invert."
-        
-        return pos
     
     Session.setDefault 'zoom', 1
     
@@ -224,19 +207,19 @@ if Meteor.isClient
                         if action is 'n'
                             $set.top = block.template.data.top + (event.clientY - memory.event.clientY) # top
                             $set.bottom = block.template.data.bottom
-                            snaps.push.apply snaps, snappable block.template.data._id, $set, true, false, true, false
+                            snaps.push.apply snaps, snappable block.template.data._id, $set, true, false, true, false, true, false
                         else if action is 'e'
                             $set.right = block.template.data.right + (event.clientX - memory.event.clientX) #right
                             $set.left = block.template.data.left
-                            snaps.push.apply snaps, snappable block.template.data._id, $set, false, true, false, true
+                            snaps.push.apply snaps, snappable block.template.data._id, $set, false, true, false, true, false, true
                         else if action is 's'
                             $set.bottom = block.template.data.bottom + (event.clientY - memory.event.clientY) # bottom
                             $set.top = block.template.data.top
-                            snaps.push.apply snaps, snappable block.template.data._id, $set, true, false, true, false
+                            snaps.push.apply snaps, snappable block.template.data._id, $set, true, false, true, false, true, false
                         else if action is 'w'
                             $set.left = block.template.data.left + (event.clientX - memory.event.clientX) # left
                             $set.right = block.template.data.right
-                            snaps.push.apply snaps, snappable block.template.data._id, $set, false, true, false, true
+                            snaps.push.apply snaps, snappable block.template.data._id, $set, false, true, false, true, false, true
                             
                     for snap in snaps
                         if snap.to in ['top', 'right', 'bottom', 'left']
@@ -244,13 +227,23 @@ if Meteor.isClient
                         else
                             if snap.to is 'horizontal' then $set[snap.from] = ((snap.document.bottom - snap.document.top) / 2) + snap.document.top
                             else if snap.to is 'vertical' then $set[snap.from] = ((snap.document.right - snap.document.left) / 2) + snap.document.left
-                    
+                            
+                        if snap.from is 'vertical'
+                            if 'e' in actions then $set.right = $set.left + ((snap.document[snap.to] - $set.left) * 2)
+                            if 'w' in actions then $set.left = $set.right - (($set.right - snap.document[snap.to]) * 2)
+                        if snap.from is 'horizontal'
+                            if 's' in actions then $set.bottom = $set.top + ((snap.document[snap.to] - $set.top) * 2)
+                            if 'n' in actions then $set.top = $set.bottom - (($set.bottom - snap.document[snap.to]) * 2)
+                        
+                        delete $set.vertical
+                        delete $set.horizontal
+                        
                     $sets[block.template.data._id] = $set
-                
+            
             
             # Combinable
             
-            else
+            else if false
                 $block = $(event.target).closest '[data-ws~="block"]'
                 $container = $block.children '[data-ws~="container"]'
                 $place = $container.children '[data-ws~="placeholder"]'
@@ -300,7 +293,11 @@ if Meteor.isClient
             $block = $(event.currentTarget).closest('[data-ws~="block"]')
             
             if $block.is "[data-ws-id~='#{template.data._id}']" # if not children
+                
+                if not event.ctrlKey and not $block.hasClass 'selected' then Blocks.find(selected: true).forEach (document) ->
+                    Blocks.update document._id, $set: selected: false
                 Blocks.update template.data._id, $set: selected: if event.ctrlKey then !template.data.selected else true
+                
                 if not memory.action
                     $block.addClass 'dragging'
                     memorize 'draggable', template.$('[data-ws~="block"]:first-child'), event, [ template: template ]
@@ -309,14 +306,12 @@ if Meteor.isClient
             $block = $(event.currentTarget).closest('[data-ws~="block"]')
             
             if $block.is "[data-ws-id~='#{template.data._id}']" # if not children
-                Blocks.update template.data._id, $set: selected: if event.ctrlKey then !template.data.selected else true
+                
                 if not memory.action
                     $block.addClass 'resizing'
                     memorize 'resizable', $(event.currentTarget), event, [ template: template ]
         
-        'click [data-ws~="block"] > [data-ws~="container"]': (event, template) ->
-            $block = $(event.currentTarget).closest('[data-ws~="block"]')
-            
-            if $block.is "[data-ws-id~='#{template.data._id}']" # if not children
-                if not event.ctrlKey and not $block.is '.selected' then Blocks.find(selected: true).forEach (document) ->
-                    Blocks.update document._id, $set: selected: false
+        #'click [data-ws~="block"] > [data-ws~="container"]': (event, template) ->
+            #$block = $(event.currentTarget).closest('[data-ws~="block"]')
+            #
+            #if $block.is "[data-ws-id~='#{template.data._id}']" # if not children

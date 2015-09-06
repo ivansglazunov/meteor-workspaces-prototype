@@ -17,6 +17,6 @@ if Meteor.isClient
         'mousedown [data-ws~="layer"]': (event, template) ->
             $layer = $(event.currentTarget).closest('[data-ws~="layer"]')
             
-            if not event.ctrlKey and not $layer.is '.selected' then Blocks.find(selected: true).forEach (document) ->
+            if not event.ctrlKey and not $layer.hasClass 'selected' then Blocks.find(selected: true).forEach (document) ->
                 Blocks.update document._id, $set: selected: false
             Blocks.update template.data._id, $set: selected: if event.ctrlKey then !template.data.selected else true
