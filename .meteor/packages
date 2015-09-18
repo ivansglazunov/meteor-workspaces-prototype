@@ -11,3 +11,8 @@ iron:router
 cryptoquick:stylus-multi
 coffeescript
 rubaxa:sortable
+jagi:astronomy
+accounts-password
+stevezhu:lodash
+dburles:collection-helpers
+aldeed:collection2

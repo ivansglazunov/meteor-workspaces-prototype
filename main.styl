@@ -13,188 +13,174 @@ normalize-css()
 border-box-html()
 fluid-media()
 
-body
-    background lighten(black, 10%)
-    font-size 12px
+button, input
+    border 0
+    outline 0
+    background transparent
+    margin 0
+    padding 0
 
-[data-ws~=menu]
-    size = 30px
-    
-    position fixed
-    z-index 10
-    
-    background lighten(black, 15%)
-    height size
-    width 100%
+[data-template="Index"]
+    position absolute
     left 0
     top 0
-    user-select none
-    
-    > *
-        outline 0
-        float left
-        height size
-        padding 0 (size / 2)
-        color white
-        border 0
-        background transparent
-        cursor default
-    
-    > [data-ws~=button]
-        background lighten(black, 17%)
-        cursor pointer
-        
-        &:hover
-            background lighten(black, 10%)
-        
-        &:active
-            background lighten(black, 5%)
-        
-        &.active
-            background lighten(black, 2.5%)
-
-[data-ws~=layers]
-    position fixed
-    z-index 11
-    right 0
-    top 0
-    width 200px
-    height 100%
-    
-    background lighten(black, 12.5%)
-    
-    [data-ws~=layer]
-        color white
-        padding 7px 10px
-        border 1px solid transparent
-        
-        &.selected
-            border-color lighten(black, 30%)
-            
-            &:hover
-                border-color lighten(black, 40%)
-        
-        &:hover
-            cursor pointer
-            
-            background lighten(black, 5%)
-
-[data-ws~=blocks]
-    position absolute
     width 100%
     height 100%
-    user-select none
+
+[data-template="spaces"]
+    position absolute
+    top 0
+    left 0
+    width 100%
+    height 100%
+
+[data-template="space"]
+    position absolute
     
-    > [data-ws~=block]
-        &.selected
-            > [data-ws~=container]
-                box-shadow 0 0 15px 0 alpha(white, 10%), inset 0 0 10px 0 alpha(white, 40%)
-                
-                > [data-ws~=border]
-                    border-color lighten(black, 40%)
-                    
-                    &:hover
-                        border-color lighten(black, 75%)
-            
-        > [data-ws~=container]
-            z-index 1
+    &:hover > .tools > .borders > .angle
+        display block
+    
+    > .tools
+        // position relative
+        // width 100%
+        // height 100%
+        no-select()
+        
+        > .placeholder
+            display none
             position absolute
+            width 100%
+            height 100%
+            background-image repeating-linear-gradient(45deg, transparent, transparent 10px, alpha(lighten(blue, 25%), 50%) 10px, alpha(lighten(blue, 25%), 50%) 20px)
+            opacity 0
             
-            > [data-ws~=content]
+            &[data-placeholder="beside"]
+                display block
+                opacity 0.25
+                
+            &[data-placeholder="hover"]
+                display block
+                opacity 0.5
+                
+                &:before
+                    content ''
+                    position absolute
+                    left 0
+                    top 0
+                    width 70%
+                    height 70%
+                    margin 15%
+                    border 1px solid lighten(blue, 25%)
+                    box-sizing border-box
+        
+        > .borders
+            
+            > .line
+                z-index 1
                 position absolute
-                width 100%
-                height 100%
-                background lighten(black, 5%)
-            
-            &:hover > [data-ws~=content]
-                background lighten(black, 2.5%)
-            
-            > [data-ws~=placeholder]
-                position absolute
-                background alpha(white, 5%)
+                width 1em
+                height 1em
+                background alpha(lighten(blue, 50%), 25%)
+                border 0px solid alpha(lighten(blue, 25%), 50%)
                 
-                &[disabled]
-                    display none
-            
-            > [data-ws~=border]
-                position absolute
-                background alpha(white, 3%)
-                border 0px solid lighten(black, 25%)
-                
-                &:hover
-                    border 0px solid lighten(black, 50%)
-                
-                size = 5px
-                
-                &[data-ws~=n], &[data-ws~=s]
-                    width 100%
-                    height size
-                
-                &[data-ws~=w], &[data-ws~=e]
-                    width size
+                &[data-p="0"]
                     height 100%
+                &[data-p="1"]
+                    width 100%
                 
-                &[data-ws~=ne], &[data-ws~=es], &[data-ws~=sw], &[data-ws~=wn]
-                    width size
-                    height size
-                
-                &[data-ws~=wn], &[data-ws~=n]
-                    top 0
+                &[data-c="0"][data-p="0"]
                     left 0
-                &[data-ws~=ne], &[data-ws~=e]
-                    top 0
-                    right 0
-                &[data-ws~=es], &[data-ws~=s]
-                    bottom 0
-                    right 0
-                &[data-ws~=sw], &[data-ws~=w]
-                    bottom 0
-                    left 0
-                
-                &[data-ws~=n]
-                    cursor n-resize
-                    border-top-width 1px
-                &[data-ws~=e]
-                    cursor e-resize
-                    border-right-width 1px
-                &[data-ws~=s]
-                    cursor s-resize
-                    border-bottom-width 1px
-                &[data-ws~=w]
                     cursor w-resize
                     border-left-width 1px
-                
-                &[data-ws~=ne]
-                    cursor ne-resize
-                &[data-ws~=es]
-                    cursor se-resize
-                &[data-ws~=sw]
-                    cursor sw-resize
-                &[data-ws~=wn]
-                    cursor nw-resize
-    
-        &.dragging, &.resizing
-            > [data-ws~=container]
-                z-index 2
-                
-                > [data-ws~=content]
-                    opacity 0.25
-        
-        > [data-ws~=guide]
-            position absolute
-            box-shadow -0.5px -0.5px 0 1px alpha(white, 2.5%)
-            width 0px
-            height 0px
+                &[data-c="1"][data-p="0"]
+                    right 0
+                    cursor e-resize
+                    border-right-width 1px
+                &[data-c="0"][data-p="1"]
+                    top 0
+                    cursor n-resize
+                    border-top-width 1px
+                &[data-c="1"][data-p="1"]
+                    bottom 0
+                    cursor s-resize
+                    border-bottom-width 1px
             
-            &[data-ws~=n]
-                width 100%
-            &[data-ws~=e]
-                height 100%
-            &[data-ws~=s]
-                width 100%
-            &[data-ws~=w]
-                height 100%
-            &[data-ws~=h]
-                width 100%
-            &[data-ws~=v]
-                height 100%
+            > .angle
+                display none
+                z-index 1
+                position absolute
+                width 1em
+                height 1em
+                
+                &[data-lines="0 1"], &[data-lines="0 1"]:before
+                    left 0 // -.56em
+                    top 0 // -.56em
+                    cursor nw-resize
+                &[data-lines="1 2"], &[data-lines="1 2"]:before
+                    right 0 // -.56em
+                    top 0 // -.56em
+                    cursor ne-resize
+                &[data-lines="2 3"], &[data-lines="2 3"]:before
+                    right 0 // -.56em
+                    bottom 0 // -.56em
+                    cursor se-resize
+                &[data-lines="3 0"], &[data-lines="3 0"]:before
+                    left 0 // -.56em
+                    bottom 0 // -.56em
+                    cursor sw-resize
+                &:before
+                    content ''
+                    position absolute
+                    width 1em
+                    height 1em
+                    border 1px solid alpha(lighten(blue, 25%), 50%)
+                    margin -.6em
+                
+    > .container
+        position absolute
+        width 100%
+        height 100%
+        top 0
+        left 0
+        
+        // background white
+        // box-shadow 0 5px 15px 0 alpha(black, 25%)
+    
+[data-template="menu"]
+    position absolute
+    top 0
+    left 0
+    width 100%
+    height 30px
+    box-shadow inset 0 -1px 0 0 gray
+    overflow hidden
+    no-select()
+    
+    input, button
+        padding 0 1em
+        float left
+        
+        &.right
+            border-left 1px solid gray
+        
+        &.left
+            border-right 1px solid gray
+    
+    button, input[type=button], input[type=submit]
+        &:not([disabled])
+            &:hover
+                box-shadow inset 0 0 0 1000px alpha(black, 10%)
+            &:active
+                box-shadow inset 0 0 0 1000px alpha(black, 10%)
+    
+    button[disabled]
+        color lighten(black, 50%)
+    
+    > *
+        height 30px
+        
+        &[data-template="account"]
+            float right
+            
+            > *
+                height 30px

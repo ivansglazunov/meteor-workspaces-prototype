@@ -4,3 +4,81 @@
 
 <body>
 </body>
+
+<template name="Index">
+    <div data-template="Index">
+        {{> spaces}}
+    </div>
+    {{> menu}}
+</template>
+
+<template name="menu">
+    <div data-template="menu">
+        {{> controls}}
+        {{> account}}
+    </div>
+</template>
+
+<template name="account">
+    {{#if account}}
+        <form data-template="account" data-account="{{_id}}">
+            {{#with account}}
+                <button class="right" disabled>{{username}}</button>
+                <input class="right" type="button" data-action="exit" value="exit"/>
+            {{/with}}
+        </form>
+    {{else}}
+        <form data-template="account">
+            <input class="right" type="text" name="username" placeholder="username"/>
+            <input class="right" type="password" name="password" placeholder="password"/>
+            <input class="right" type="submit" data-action="entry" value="entry"/>
+        </form>
+    {{/if}}
+</template>
+
+<template name="controls">
+    <button class="left" disabled>snap</button>
+    <input class="left" type="number" name="snap" value="{{snap}}" style="width: 2em;"/>
+    <button class="left" disabled>border</button>
+    <input class="left" type="number" name="border" value="{{border}}" style="width: 2em;"/>
+    <button class="left" disabled>radius</button>
+    <input class="left" type="number" name="radius" value="{{radius}}" style="width: 3em;"/>
+</template>
+
+<template name="spaces">
+    <div data-template="spaces">
+        <div data-spaces>
+            {{#each spaces}}
+                {{> space}}
+            {{/each}}
+        </div>
+    </div>
+</template>
+
+<template name="space">
+    <div data-template="space" data-id="{{_id}}" style="width: {{width}}px; height: {{height}}px; left: {{left}}px; top: {{top}}px;" data-draggable="false">
+        
+        <div class="container"></div>
+        
+        <div class="tools">
+            <div class="placeholder" data-placeholder=""></div>
+            <div class="borders" style="font-size: {{border}}px;">
+                <div data-c="0" data-p="0" data-line="0" class="line"></div>
+                <div data-c="0" data-p="1" data-line="1" class="line"></div>
+                <div data-c="1" data-p="0" data-line="2" class="line"></div>
+                <div data-c="1" data-p="1" data-line="3" class="line"></div>
+                <div data-lines="0 1" class="angle"></div>
+                <div data-lines="1 2" class="angle"></div>
+                <div data-lines="2 3" class="angle"></div>
+                <div data-lines="3 0" class="angle"></div>
+            </div>
+        </div>
+
+        <div data-spaces>
+            {{#each spaces}}
+                {{> space}}
+            {{/each}}
+        </div>
+        
+    </div>
+</template>

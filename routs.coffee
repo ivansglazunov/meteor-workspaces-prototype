@@ -1,1 +1,0 @@
-Router.route '/', -> this.render 'ws-index'
